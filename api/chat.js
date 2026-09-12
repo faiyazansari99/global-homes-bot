@@ -10,15 +10,19 @@ export default async function handler(req, res) {
         return res.status(500).json({ reply: "Groq API Key missing in Vercel Settings!" });
     }
 
+    if (!config) {
+        return res.status(500).json({ reply: "Config missing! Check config.js file." });
+    }
+
     try {
         // System prompt mein client ki details bhar do
         let finalPrompt = config.systemPrompt
-            .replace(/{businessName}/g, config.businessName)
-            .replace(/{businessType}/g, config.businessType)
-            .replace(/{services}/g, config.services)
-            .replace(/{whatsappNumber}/g, config.whatsappNumber)
-            .replace(/{email}/g, config.email)
-            .replace(/{address}/g, config.address);
+            .replace(/{businessName}/g, config.businessName || "")
+            .replace(/{businessType}/g, config.businessType || "")
+            .replace(/{services}/g, config.services || "")
+            .replace(/{whatsappNumber}/g, config.whatsappNumber || "")
+            .replace(/{email}/g, config.email || "")
+            .replace(/{address}/g, config.address || "");
 
         const response = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
@@ -29,7 +33,7 @@ export default async function handler(req, res) {
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile", // Fast + Smart + Sasta
+                    model: "openai/gpt-oss-120b", // ✅ Naya Active Model
                     messages: [
                         { role: "system", content: finalPrompt },
                         { role: "user", content: message }
