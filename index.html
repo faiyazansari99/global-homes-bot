@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Homes - Find Property Anywhere</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+<!-- Navbar -->
+<nav class="flex justify-between items-center px-8 py-4 bg-white shadow-sm">
+  <h1 class="text-2xl font-bold">🌍 Global Homes</h1>
+  <div class="flex gap-4">
+    <span class="hidden md:block text-gray-600">Home | Properties | Agents | Contact</span>
+    <button class="bg-teal-600 text-white px-5 py-2 rounded-lg">Get Started</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="bg-gradient-to-r from-blue-100 to-teal-100 py-16 text-center">
+  <h2 class="text-5xl font-bold">Find Your Global Home</h2>
+  <p class="text-gray-600 mt-3">Discover luxury properties across Dubai, London & New York.</p>
+  <div class="bg-white max-w-3xl mx-auto mt-6 p-3 rounded-2xl shadow flex gap-2">
+    <input id="searchInput" placeholder="Search location, property type, budget..." class="flex-1 px-4 outline-none">
+    <button class="bg-teal-600 text-white px-6 py-2 rounded-xl">Search</button>
+  </div>
+</div>
+
+<!-- Properties -->
+<div class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-6">
+  <div class="bg-white rounded-2xl shadow p-4"><h3 class="font-bold">Dubai Marina - $850,000</h3><p class="text-sm text-gray-500">2 Beds | 2 Baths | Dubai, UAE</p></div>
+  <div class="bg-white rounded-2xl shadow p-4"><h3 class="font-bold">London - £1,200,000</h3><p class="text-sm text-gray-500">3 Beds | 3 Baths | London, UK</p></div>
+  <div class="bg-white rounded-2xl shadow p-4"><h3 class="font-bold">New York - $2,100,000</h3><p class="text-sm text-gray-500">4 Beds | 3 Baths | Manhattan, USA</p></div>
+</div>
+
+<!-- Chat Widget -->
+<div id="chat-widget" class="fixed bottom-5 right-5 w-80 bg-white rounded-2xl shadow-2xl border">
+  <div class="bg-teal-600 text-white p-3 rounded-t-2xl font-bold">💬 Global Assistant</div>
+  <div id="chat-box" class="h-64 overflow-y-auto p-3 text-sm space-y-2">
+    <div class="bg-gray-100 p-2 rounded-lg">Hi, kahan property dekh rahe ho? Dubai, UK, US?</div>
+  </div>
+  <div class="flex p-2 border-t">
+    <input id="chat-input" class="flex-1 outline-none text-sm px-2" placeholder="Type your message...">
+    <button id="send-btn" class="bg-teal-600 text-white px-3 py-1 rounded-full">➤</button>
+  </div>
+</div>
+
+<script>
+const box = document.getElementById('chat-box');
+const input = document.getElementById('chat-input');
+document.getElementById('send-btn').onclick = async () => {
+  const msg = input.value; if(!msg) return;
+  box.innerHTML += `<div class="bg-teal-50 p-2 rounded-lg text-right ml-8">${msg}</div>`;
+  input.value = '';
+  const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({message: msg}) });
+  const data = await res.json();
+  box.innerHTML += `<div class="bg-gray-100 p-2 rounded-lg mr-8">${data.reply}</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+</script>
+</body>
+</html>
