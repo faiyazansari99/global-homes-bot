@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Homes | Luxury Properties in Dubai, London, NY</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', sans-serif}
+body{background:#f8f9fa}
+.header{position:fixed;top:0;width:100%;background:#0f172a;color:white;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
+.logo{font-size:22px;font-weight:800;display:flex;align-items:center;gap:8px}
+.logo span{color:#c5a880}
+.btn-gold{background:linear-gradient(135deg,#c5a880,#8a6d3b);color:white;border:none;padding:10px 20px;border-radius:25px;font-weight:700;cursor:pointer}
+.hero{margin-top:70px;height:85vh;background:linear-gradient(rgba(15,23,42,0.6),rgba(15,23,42,0.6)),url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2000');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;padding:20px}
+.hero h1{font-size:48px;font-weight:900;line-height:1.1;margin-bottom:15px}
+.hero h1 span{color:#c5a880}
+.hero p{font-size:18px;opacity:0.9;max-width:600px;margin-bottom:25px}
+.search-box{background:white;padding:8px;border-radius:50px;display:flex;max-width:650px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+.search-box input{flex:1;border:none;outline:none;padding:15px 20px;font-size:16px;border-radius:50px}
+.search-box button{background:#0f172a;color:white;border:none;padding:0 30px;border-radius:50px;font-weight:700;cursor:pointer}
+.properties{padding:60px 5%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px}
+.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,0.08);transition:0.3s}
+.card:hover{transform:translateY(-5px)}
+.card img{width:100%;height:200px;object-fit:cover}
+.card-info{padding:18px}
+.card-info h3{font-size:18px;margin-bottom:5px}
+.card-info p{color:#64748b;font-size:14px}
+
+/* FLOATING CHAT BUTTON - YE CHOTA RAHEGA */
+#chat-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;z-index:9999;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:0.3s}
+#chat-bubble:hover{transform:scale(1.1)}
+#chat-bubble span{font-size:30px}
+
+/* CHAT WINDOW - PEHLE CHUPA RAHEGA */
+#chat-window{position:fixed;bottom:100px;right:25px;width:380px;max-width:90vw;height:500px;background:white;border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,0.3);display:none;flex-direction:column;z-index:9999;overflow:hidden}
+#chat-header{background:#0f172a;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+#chat-header h4{font-size:16px;display:flex;align-items:center;gap:8px}
+#chat-close{cursor:pointer;font-size:22px}
+#chat-messages{flex:1;padding:15px;overflow-y:auto;background:#f8fafc;display:flex;flex-direction:column;gap:10px}
+.msg{padding:10px 14px;border-radius:18px;max-width:80%;font-size:14px;line-height:1.4}
+.user-msg{align-self:flex-end;background:#0f172a;color:white;border-bottom-right-radius:4px}
+.bot-msg{align-self:flex-start;background:white;border:1px solid #e2e8f0;color:#334155;border-bottom-left-radius:4px}
+#chat-input-area{padding:12px;border-top:1px solid #e2e8f0;display:flex;gap:10px;background:white}
+#chat-input{flex:1;border:1px solid #e2e8f0;padding:12px 15px;border-radius:25px;outline:none;font-size:14px}
+#chat-send{background:#c5a880;border:none;width:42px;height:42px;border-radius:50%;cursor:pointer;color:white;font-size:18px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="logo">🌍 Global <span>Homes</span></div>
+<button class="btn-gold">List Property</button>
+</div>
+
+<div class="hero">
+<h1>Find Your <span>Global Home</span></h1>
+<p>Discover luxury properties across Dubai, London & New York. Verified listings, virtual tours, expert assistance.</p>
+<div class="search-box">
+<input type="text" placeholder="Search location, property type, budget...">
+<button>Search</button>
+</div>
+</div>
+
+<div class="properties">
+<div class="card"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"><div class="card-info"><h3>Dubai Marina Penthouse</h3><p>2 Bed • Dubai • $1.2M</p></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9"><div class="card-info"><h3>London Knightsbridge Villa</h3><p>4 Bed • London • $3.5M</p></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"><div class="card-info"><h3>New York Manhattan View</h3><p>3 Bed • New York • $2.8M</p></div></div>
+</div>
+
+<!-- FLOATING BUTTON -->
+<div id="chat-bubble" onclick="toggleChat()"><span>💬</span></div>
+
+<!-- HIDDEN CHAT WINDOW -->
+<div id="chat-window">
+<div id="chat-header"><h4>💬 Global Assistant</h4><span id="chat-close" onclick="toggleChat()">×</span></div>
+<div id="chat-messages">
+<div class="msg bot-msg">Hi! 👋 Mai aapka Global Homes assistant hu. Dubai, London ya New York me kya dekh rahe ho?</div>
+</div>
+<div id="chat-input-area">
+<input id="chat-input" placeholder="Type your message..." onkeypress="if(event.key==='Enter')sendMsg()">
+<button id="chat-send" onclick="sendMsg()">➤</button>
+</div>
+</div>
+
+<script>
+let isOpen = false;
+function toggleChat(){
+  const win = document.getElementById('chat-window');
+  isOpen = !isOpen;
+  win.style.display = isOpen ? 'flex' : 'none';
+}
+
+async function sendMsg(){
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  
+  const box = document.getElementById('chat-messages');
+  box.innerHTML += `<div class="msg user-msg">${msg}</div>`;
+  input.value = '';
+  box.scrollTop = box.scrollHeight;
+
+  // typing indicator
+  const typingId = 'typing-' + Date.now();
+  box.innerHTML += `<div class="msg bot-msg" id="${typingId}">Typing...</div>`;
+  box.scrollTop = box.scrollHeight;
+
+  try{
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    document.getElementById(typingId).remove();
+    box.innerHTML += `<div class="msg bot-msg">${data.reply}</div>`;
+    box.scrollTop = box.scrollHeight;
+  }catch(e){
+    document.getElementById(typingId).remove();
+    box.innerHTML += `<div class="msg bot-msg">Sorry, connection error. Please try again.</div>`;
+  }
+}
+</script>
+</body>
+</html>
