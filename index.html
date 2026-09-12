@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Homes | Luxury Properties Worldwide</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family: 'Inter', 'Segoe UI', sans-serif}
+body{background:#f8fafc;overflow-x:hidden}
+.header{position:fixed;top:0;width:100%;height:70px;background:rgba(15,23,42,0.95);backdrop-filter:blur(10px);color:white;padding:0 5%;display:flex;justify-content:space-between;align-items:center;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.1)}
+.logo{font-size:24px;font-weight:800;letter-spacing:0.5px} .logo i{color:#c5a880;margin-right:8px} .logo span{color:#c5a880}
+.nav{display:flex;gap:30px;align-items:center} .nav a{color:#cbd5e1;text-decoration:none;font-size:14px;font-weight:500} .nav a:hover{color:white}
+.btn-gold{background:linear-gradient(135deg,#c5a880,#9c7a4b);color:white;border:none;padding:11px 22px;border-radius:30px;font-weight:700;cursor:pointer;font-size:13px;letter-spacing:0.5px}
+.hero{margin-top:70px;height:88vh;min-height:600px;background:linear-gradient(180deg,rgba(15,23,42,0.3) 0%,rgba(15,23,42,0.8) 100%),url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;padding:20px}
+.hero h1{font-size:52px;font-weight:900;line-height:1.1;margin-bottom:18px;text-shadow:0 4px 20px rgba(0,0,0,0.4)} .hero h1 span{color:#c5a880}
+.hero p{font-size:17px;opacity:0.9;max-width:620px;margin-bottom:30px;line-height:1.6}
+.search-wrapper{background:white;padding:6px;border-radius:50px;display:flex;align-items:center;max-width:700px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.25)}
+.search-wrapper i{color:#94a3b8;margin-left:20px;font-size:18px}
+.search-wrapper input{flex:1;border:none;outline:none;padding:16px 15px;font-size:15px;background:transparent}
+.search-wrapper button{background:#0f172a;color:white;border:none;padding:14px 32px;border-radius:40px;font-weight:700;cursor:pointer;margin-right:2px;transition:0.3s} .search-wrapper button:hover{background:#1e293b}
+.properties{padding:70px 5%;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px}
+.card{background:white;border-radius:18px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,0.06);transition:0.3s;border:1px solid #f1f5f9} .card:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(0,0,0,0.1)}
+.card img{width:100%;height:220px;object-fit:cover} .card-info{padding:20px} .card-info h3{font-size:17px;font-weight:700;margin-bottom:6px;color:#0f172a} .card-info p{color:#64748b;font-size:13px} .card-info .price{color:#0f172a;font-weight:800;margin-top:8px;font-size:15px}
+
+/* CHAT - PROFESSIONAL */
+#chat-bubble{position:fixed;bottom:28px;right:28px;display:flex;align-items:center;gap:12px;z-index:9999;cursor:pointer}
+#chat-label{background:white;color:#0f172a;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:700;box-shadow:0 8px 25px rgba(0,0,0,0.15);animation: pulse 2s infinite}
+#chat-icon{width:62px;height:62px;background:linear-gradient(135deg,#0f172a,#334155);border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:0.3s}
+#chat-icon i{color:white;font-size:26px}
+#chat-bubble:hover #chat-icon{transform:scale(1.08)}
+@keyframes pulse{0%{box-shadow:0 8px 25px rgba(0,0,0,0.15)} 50%{box-shadow:0 8px 30px rgba(197,168,128,0.4)} 100%{box-shadow:0 8px 25px rgba(0,0,0,0.15)}}
+
+#chat-window{position:fixed;bottom:100px;right:28px;width:380px;max-width:92vw;height:540px;background:white;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,0.25);display:none;flex-direction:column;z-index:10000;overflow:hidden;border:1px solid #e2e8f0;animation: slideUp 0.3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1}}
+#chat-header{background:linear-gradient(135deg,#0f172a,#1e293b);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+#chat-header div h4{font-size:15px;font-weight:700} #chat-header div p{font-size:11px;opacity:0.7;margin-top:2px}
+#chat-close{width:30px;height:30px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer}
+#chat-messages{flex:1;padding:16px;overflow-y:auto;background:#f8fafc;display:flex;flex-direction:column;gap:12px}
+.msg{padding:11px 15px;border-radius:20px;max-width:85%;font-size:13.5px;line-height:1.5;word-wrap:break-word}
+.user-msg{align-self:flex-end;background:#0f172a;color:white;border-bottom-right-radius:6px}
+.bot-msg{align-self:flex-start;background:white;border:1px solid #e2e8f0;color:#334155;border-bottom-left-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+#chat-input-area{padding:12px;border-top:1px solid #e2e8f0;display:flex;gap:10px;background:white;align-items:center}
+#chat-input{flex:1;border:1px solid #e2e8f0;padding:12px 16px;border-radius:25px;outline:none;font-size:13.5px;background:#f8fafc}
+#chat-input:focus{border-color:#c5a880;background:white}
+#chat-send{background:linear-gradient(135deg,#c5a880,#9c7a4b);border:none;width:42px;height:42px;border-radius:50%;cursor:pointer;color:white;display:flex;justify-content:center;align-items:center}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="logo"><i class="fa-solid fa-earth-americas"></i>Global <span>Homes</span></div>
+<div class="nav">
+<a href="#">Buy</a><a href="#">Rent</a><a href="#">Invest</a>
+<button class="btn-gold">LIST PROPERTY</button>
+</div>
+</div>
+
+<div class="hero">
+<h1>Find Your <span>Global Home</span></h1>
+<p>Premium verified properties in Dubai, London & New York. Instant virtual tours, direct owner connect, expert guidance.</p>
+<div class="search-wrapper">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input id="searchInput" type="text" placeholder="Search by location, budget, 2BHK, Villa...">
+<button onclick="handleSearch()"><i class="fa-solid fa-search" style="margin-right:6px"></i> Search</button>
+</div>
+</div>
+
+<div class="properties" id="propGrid">
+<div class="card"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800"><div class="card-info"><h3>Dubai Marina Penthouse</h3><p><i class="fa-solid fa-location-dot"></i> 2 Bed • Dubai Marina</p><div class="price">$1.2M • Ready to Move</div></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=800"><div class="card-info"><h3>London Knightsbridge Villa</h3><p><i class="fa-solid fa-location-dot"></i> 4 Bed • Central London</p><div class="price">$3.5M • Luxury Villa</div></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800"><div class="card-info"><h3>Manhattan Skyline View</h3><p><i class="fa-solid fa-location-dot"></i> 3 Bed • New York</p><div class="price">$2.8M • Sea Facing</div></div></div>
+</div>
+
+<!-- PROFESSIONAL CHAT -->
+<div id="chat-bubble" onclick="toggleChat()">
+<div id="chat-label">Need help? Chat with us</div>
+<div id="chat-icon"><i class="fa-solid fa-comments"></i></div>
+</div>
+
+<div id="chat-window">
+<div id="chat-header">
+<div style="display:flex;gap:12px;align-items:center">
+<div style="width:38px;height:38px;background:#c5a880;border-radius:50%;display:flex;justify-content:center;align-items:center"><i class="fa-solid fa-headset"></i></div>
+<div><h4>Global Homes Support</h4><p>● Online • Replies instantly</p></div>
+</div>
+<div id="chat-close" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></div>
+</div>
+<div id="chat-messages"></div>
+<div id="chat-input-area">
+<input id="chat-input" placeholder="Ask about budget, location..." onkeypress="if(event.key==='Enter')sendMsg()">
+<button id="chat-send" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+</div>
+</div>
+
+<script>
+let chatHistory = JSON.parse(localStorage.getItem('gh_chat') || '[]');
+let isOpen = false;
+
+function toggleChat(){
+  const win = document.getElementById('chat-window');
+  const label = document.getElementById('chat-label');
+  isOpen = !isOpen;
+  win.style.display = isOpen ? 'flex' : 'none';
+  label.style.display = isOpen ? 'none' : 'block';
+  if(isOpen) renderHistory();
+}
+
+function renderHistory(){
+  const box = document.getElementById('chat-messages');
+  box.innerHTML = '';
+  if(chatHistory.length === 0){
+    box.innerHTML = `<div class="msg bot-msg">Hi! 👋 Welcome to Global Homes. I’m your personal property expert. Tell me — which city and budget are you looking for?</div>`;
+  } else {
+    chatHistory.forEach(m => {
+      const cls = m.role === 'user' ? 'user-msg' : 'bot-msg';
+      box.innerHTML += `<div class="msg ${cls}">${m.content}</div>`;
+    });
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendMsg(){
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  
+  chatHistory.push({role:'user', content: msg});
+  localStorage.setItem('gh_chat', JSON.stringify(chatHistory));
+  renderHistory();
+  input.value = '';
+
+  const box = document.getElementById('chat-messages');
+  const typingId = 'typing';
+  box.innerHTML += `<div class="msg bot-msg" id="${typingId}"><i class="fa-solid fa-ellipsis fa-bounce"></i> Typing...</div>`;
+  box.scrollTop = box.scrollHeight;
+
+  try{
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: msg, history: chatHistory.slice(-8) })
+    });
+    const data = await res.json();
+    document.getElementById(typingId)?.remove();
+    chatHistory.push({role:'assistant', content: data.reply});
+    localStorage.setItem('gh_chat', JSON.stringify(chatHistory));
+    renderHistory();
+  }catch(e){
+    document.getElementById(typingId)?.remove();
+    box.innerHTML += `<div class="msg bot-msg">Connection slow, please try again.</div>`;
+  }
+}
+
+function handleSearch(){
+  const val = document.getElementById('searchInput').value;
+  if(val) { toggleChat(); document.getElementById('chat-input').value = val; sendMsg(); }
+}
+
+// Auto open chat label after 3 sec so client knows
+setTimeout(()=>{ document.getElementById('chat-label').style.display='block'; }, 1500);
+renderHistory();
+</script>
+</body>
+</html>
