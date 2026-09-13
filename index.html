@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Homes - Find Your Dream Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #f8f9fa; color: #1a1a2e; overflow-x: hidden; }
+        
+        /* NAVBAR */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 18px 5%; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; color: #0a2540; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00b4d8, #0077b6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; box-shadow: 0 4px 12px rgba(0,119,182,0.3); }
+        .nav-links { display: none; gap: 32px; font-size: 15px; font-weight: 500; }
+        .nav-links a { color: #4a5568; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover { color: #0077b6; }
+        .btn-primary { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,119,182,0.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,119,182,0.4); }
+        
+        /* HERO */
+        .hero { position: relative; height: 440px; background: url('https://images.unsplash.com/photo-1512453979798-5ea904ac66de?auto=format&fit=crop&w=1600&q=80') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,37,64,0.8), rgba(0,119,182,0.65)); }
+        .hero-content { position: relative; z-index: 1; max-width: 700px; }
+        .hero h1 { font-size: 38px; font-weight: 800; color: white; margin-bottom: 14px; line-height: 1.2; letter-spacing: -0.5px; }
+        .hero p { font-size: 16px; color: rgba(255,255,255,0.9); margin-bottom: 30px; font-weight: 400; }
+        .search-bar { background: white; padding: 8px; border-radius: 14px; display: flex; gap: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+        .search-bar input { border: none; outline: none; padding: 14px 18px; flex: 1; border-radius: 10px; font-size: 14px; background: transparent; }
+        .search-bar button { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; border: none; padding: 14px 26px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; white-space: nowrap; transition: all 0.3s; }
+        .search-bar button:hover { transform: scale(1.03); }
+        
+        /* STATS */
+        .stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; padding: 35px 5%; background: white; box-shadow: 0 5px 25px rgba(0,0,0,0.05); }
+        .stat-item { text-align: center; }
+        .stat-item .num { font-size: 26px; font-weight: 800; color: #0077b6; letter-spacing: -0.5px; }
+        .stat-item .label { font-size: 12px; color: #718096; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* PROPERTIES */
+        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 40px 5% 20px; }
+        .section-header h2 { font-size: 26px; font-weight: 800; color: #0a2540; letter-spacing: -0.5px; }
+        .section-header a { color: #0077b6; text-decoration: none; font-size: 14px; font-weight: 600; }
+        
+        .property-grid { display: grid; grid-template-columns: 1fr; gap: 22px; padding: 0 5% 60px; }
+        .card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 25px rgba(0,0,0,0.07); transition: all 0.35s; cursor: pointer; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+        .card-img { position: relative; height: 210px; overflow: hidden; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .card:hover .card-img img { transform: scale(1.08); }
+        .badge { position: absolute; top: 14px; left: 14px; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; color: white; letter-spacing: 0.3px; }
+        .badge-popular { background: linear-gradient(135deg, #0077b6, #00b4d8); }
+        .badge-new { background: linear-gradient(135deg, #f59e0b, #f97316); }
+        .badge-hot { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .card-body { padding: 20px; }
+        .card-body h3 { font-size: 19px; font-weight: 700; color: #0a2540; margin-bottom: 6px; }
+        .card-body .location { font-size: 13px; color: #718096; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+        .card-body .price { font-size: 24px; font-weight: 800; color: #0077b6; margin-bottom: 14px; letter-spacing: -0.5px; }
+        .card-features { display: flex; gap: 14px; font-size: 12px; color: #4a5568; margin-bottom: 16px; font-weight: 500; }
+        .view-btn { width: 100%; padding: 13px; background: #f0f7fa; color: #0077b6; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .view-btn:hover { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; }
+        
+        /* CHAT WIDGET */
+        .chat-widget { position: fixed; bottom: 22px; right: 22px; z-index: 1000; }
+        .chat-btn { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; width: 62px; height: 62px; border-radius: 50%; border: none; font-size: 26px; box-shadow: 0 10px 30px rgba(0,119,182,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .chat-btn:hover { transform: scale(1.1) rotate(5deg); }
+        
+        .chat-window { display: none; position: absolute; bottom: 82px; right: 0; width: 350px; height: 540px; background: white; border-radius: 20px; box-shadow: 0 25px 70px rgba(0,0,0,0.25); flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .chat-header { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header h4 { font-size: 15px; font-weight: 600; margin: 0; }
+        .chat-header-btns { display: flex; gap: 8px; align-items: center; }
+        .new-chat-btn { font-size: 11px; background: rgba(255,255,255,0.25); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .new-chat-btn:hover { background: rgba(255,255,255,0.4); }
+        .close-btn { cursor: pointer; font-size: 20px; opacity: 0.9; transition: all 0.2s; }
+        .close-btn:hover { opacity: 1; transform: scale(1.1); }
+        
+        .chat-box { flex: 1; overflow-y: auto; padding: 18px; background: #f7fafc; }
+        .chat-box::-webkit-scrollbar { width: 6px; }
+        .chat-box::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+        
+        .msg { margin: 10px 0; padding: 11px 15px; border-radius: 16px; max-width: 82%; font-size: 14px; line-height: 1.55; word-wrap: break-word; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-msg { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; margin-left: auto; border-bottom-right-radius: 5px; box-shadow: 0 3px 10px rgba(0,119,182,0.25); }
+        .bot-msg { background: white; color: #2d3748; border-bottom-left-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        
+        .quick-replies { padding: 10px 12px; background: white; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid #e2e8f0; }
+        .qr-btn { background: #f0f7fa; color: #0077b6; border: 1px solid #cce7f0; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .qr-btn:hover { background: #0077b6; color: white; }
+        
+        .chat-input { padding: 12px; background: white; display: flex; gap: 8px; align-items: center; border-top: 1px solid #e2e8f0; }
+        .chat-input input[type="text"] { flex: 1; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 25px; outline: none; font-size: 14px; transition: all 0.2s; }
+        .chat-input input[type="text"]:focus { border-color: #00b4d8; }
+        .icon-btn { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; border: none; border-radius: 50%; width: 42px; height: 42px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,119,182,0.25); }
+        .icon-btn:hover { transform: scale(1.08); }
+        
+        /* RESPONSIVE */
+        @media (min-width: 768px) {
+            .nav-links { display: flex; }
+            .hero { height: 540px; }
+            .hero h1 { font-size: 54px; }
+            .property-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 400px) {
+            .chat-window { width: calc(100vw - 30px); right: -10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <div class="logo-icon">🏢</div>
+            <span id="navBrand">Global Homes</span>
+        </div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Properties</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+        <button class="btn-primary" onclick="openWhatsApp()">Get Started</button>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Find Your Global Home</h1>
+            <p>Discover luxury properties across Dubai, London & New York. Your dream home is just a search away.</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search location, property type, budget...">
+                <button>🔍 Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-item"><div class="num">10,000+</div><div class="label">Verified Listings</div></div>
+        <div class="stat-item"><div class="num">50+</div><div class="label">Cities Worldwide</div></div>
+        <div class="stat-item"><div class="num">25K+</div><div class="label">Happy Clients</div></div>
+    </div>
+
+    <!-- PROPERTIES -->
+    <div class="section-header">
+        <h2>Featured Properties</h2>
+        <a href="#">View All →</a>
+    </div>
+    <div class="property-grid">
+        <div class="card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" alt="Dubai Marina">
+                <span class="badge badge-popular">Popular</span>
+            </div>
+            <div class="card-body">
+                <h3>Dubai Marina</h3>
+                <div class="location">📍 Dubai Marina, Dubai, UAE</div>
+                <div class="price">$850,000</div>
+                <div class="card-features">
+                    <span>🛏️ 2 Beds</span><span>🛁 2 Baths</span><span>📐 1,200 sqft</span>
+                </div>
+                <button class="view-btn">View Details</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" alt="London Heights">
+                <span class="badge badge-new">New Listing</span>
+            </div>
+            <div class="card-body">
+                <h3>London Heights</h3>
+                <div class="location">📍 Notting Hill, London, UK</div>
+                <div class="price">£1,200,000</div>
+                <div class="card-features">
+                    <span>🛏️ 3 Beds</span><span>🛁 3 Baths</span><span>📐 2,200 sqft</span>
+                </div>
+                <button class="view-btn">View Details</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=600&q=80" alt="New York Skyline">
+                <span class="badge badge-hot">Hot</span>
+            </div>
+            <div class="card-body">
+                <h3>New York Skyline</h3>
+                <div class="location">📍 Manhattan, New York, USA</div>
+                <div class="price">$2,100,000</div>
+                <div class="card-features">
+                    <span>🛏️ 3 Beds</span><span>🛁 3 Baths</span><span>📐 2,500 sqft</span>
+                </div>
+                <button class="view-btn">View Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT WIDGET -->
+    <div class="chat-widget">
+        <button class="chat-btn" onclick="toggleChat()">💬</button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h4 id="chatBrand">Global Homes Assistant</h4>
+                <div class="chat-header-btns">
+                    <span class="new-chat-btn" onclick="clearChat()">+ New</span>
+                    <span class="close-btn" onclick="toggleChat()">✕</span>
+                </div>
+            </div>
+            <div class="chat-box" id="chatBox">
+                <div class="msg bot-msg">Hi! 👋 Kahan property dekh rahe ho? Dubai, UK, US?</div>
+            </div>
+            <div class="quick-replies" id="quickReplies"></div>
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button class="icon-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // ============================================
+        // CHAT HISTORY - localStorage se load karo
+        // ============================================
+        let chatHistory = JSON.parse(localStorage.getItem('gh_chat_history') || '[]');
+
+        // Config apply karo
+        document.getElementById('navBrand').innerText = CLIENT_CONFIG.businessName;
+        document.getElementById('chatBrand').innerText = CLIENT_CONFIG.businessName + " Assistant";
+        document.title = CLIENT_CONFIG.businessName;
+
+        // Quick Reply buttons load karo
+        const qrContainer = document.getElementById('quickReplies');
+        if (CLIENT_CONFIG.quickReplies) {
+            CLIENT_CONFIG.quickReplies.forEach(qr => {
+                const btn = document.createElement('button');
+                btn.className = 'qr-btn';
+                btn.innerText = qr;
+                btn.onclick = () => { document.getElementById('userInput').value = qr; sendMessage(); };
+                qrContainer.appendChild(btn);
+            });
+        }
+
+        // Purani chat restore karo (agar hai)
+        if (chatHistory.length > 0) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = '';
+            chatHistory.forEach(msg => {
+                const cls = msg.role === 'user' ? 'user-msg' : 'bot-msg';
+                chatBox.innerHTML += `<div class="msg ${cls}">${msg.content}</div>`;
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // ============================================
+        // CHAT TOGGLE
+        // ============================================
+        function toggleChat() {
+            const cw = document.getElementById('chatWindow');
+            cw.style.display = (cw.style.display === 'flex') ? 'none' : 'flex';
+            if (cw.style.display === 'flex') {
+                document.getElementById('userInput').focus();
+                const chatBox = document.getElementById('chatBox');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // ============================================
+        // NEW CHAT (Purani chat delete)
+        // ============================================
+        function clearChat() {
+            if (!confirm("Nayi chat shuru karni hai? Purani chat delete ho jayegi.")) return;
+            chatHistory = [];
+            localStorage.removeItem('gh_chat_history');
+            document.getElementById('chatBox').innerHTML = `<div class="msg bot-msg">Hi! 👋 Kahan property dekh rahe ho? Dubai, UK, US?</div>`;
+            document.getElementById('userInput').focus();
+        }
+
+        // ============================================
+        // WHATSAPP OPEN
+        // ============================================
+        function openWhatsApp() {
+            const msg = encodeURIComponent("Hi, mujhe property ke baare mein jaankari chahiye");
+            window.open(`https://wa.me/${CLIENT_CONFIG.whatsappNumber}?text=${msg}`, '_blank');
+        }
+
+        // ============================================
+        // MESSAGE SEND
+        // ============================================
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatBox = document.getElementById('chatBox');
+            
+            // User message show karo
+            chatBox.innerHTML += `<div class="msg user-msg">${message}</div>`;
+            chatHistory.push({ role: "user", content: message });
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Typing indicator
+            const typingId = 'typing-' + Date.now();
+            chatBox.innerHTML += `<div class="msg bot-msg" id="${typingId}">Typing...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        config: CLIENT_CONFIG,
+                        history: chatHistory.slice(-20)
+                    })
+                });
+                const data = await response.json();
+                document.getElementById(typingId).remove();
+                chatBox.innerHTML += `<div class="msg bot-msg">${data.reply}</div>`;
+                
+                chatHistory.push({ role: "assistant", content: data.reply });
+                
+                // Sirf last 20 messages yaad rakho
+                if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+                
+                // localStorage mein save karo
+                localStorage.setItem('gh_chat_history', JSON.stringify(chatHistory));
+                
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                chatBox.innerHTML += `<div class="msg bot-msg">Error! Network issue. Dobara try karein.</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
