@@ -10,9 +10,11 @@ const CLIENT_CONFIG = {
     email: "info@globalhomes.ae",
     address: "Business Bay, Dubai, UAE",
     
-    // ✅ LEAD CAPTURE ENDPOINTS (Configured!)
+    // ✅ GOOGLE SHEET URL (Naya - Updated!)
+    googleSheetUrl: "https://script.google.com/macros/s/AKfycbzEJfkb5kg_D7g18C_wQFdUGVz9hb9HePh0waMGyxKqZz2y_D3CV-rGBdmuXMjLA14X/exec",
+    
+    // Lead Capture (Formspree)
     formspreeEndpoint: "https://formspree.io/f/xqpkvddr",
-    googleSheetUrl: "https://script.google.com/macros/s/AKfycbxYm7L0qZD_LJ_ihSOodMJ_HKu0JjU9gXvenXOi6csq-R3A1Brxb8TPC3gCwu4kiSFyGQ/exec",
     
     // Admin Page Password
     adminPassword: "admin123",
