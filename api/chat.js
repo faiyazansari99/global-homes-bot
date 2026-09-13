@@ -1,12 +1,10 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
-    const { message, config, history, image, mimeType } = req.body;
-    const apiKey = process.env.GROQ_API_KEY;
+    const { message, config, history } = req.body;
+    const groqKey = process.env.GROQ_API_KEY;
 
-    if (!apiKey) return res.status(500).json({ reply: "Groq API Key missing!" });
+    if (!groqKey) return res.status(500).json({ reply: "Groq API Key missing!" });
     if (!config) return res.status(500).json({ reply: "Config missing!" });
 
     try {
@@ -18,77 +16,60 @@ export default async function handler(req, res) {
             .replace(/{email}/g, config.email || "")
             .replace(/{address}/g, config.address || "");
 
-        // Build messages array
         const messages = [{ role: "system", content: finalPrompt }];
-
-        if (history && history.length > 0) {
-            history.forEach(msg => {
-                messages.push({ role: msg.role, content: msg.content });
-            });
+        if (history && history.length) {
+            history.forEach(m => messages.push({ role: m.role, content: m.content }));
         }
+        messages.push({ role: "user", content: message });
 
-        // Agar image hai toh vision format use karo
-        if (image) {
-            messages.push({
-                role: "user",
-                content: [
-                    { type: "text", text: message || "Is image ko analyze karo" },
-                    { type: "image_url", image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${image}` } }
-                ]
-            });
-        } else {
-            messages.push({ role: "user", content: message });
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
+            body: JSON.stringify({ model: "openai/gpt-oss-120b", messages, temperature: 0.7, max_tokens: 500 })
+        });
+        const groqData = await groqRes.json();
+        if (!groqData.choices || !groqData.choices[0]) {
+            return res.status(500).json({ reply: "API Error: " + (groqData.error?.message || "Unknown") });
         }
+        const reply = groqData.choices[0].message.content;
 
-        // Model choose karo: image hai toh vision, warna normal
-        const model = image 
-            ? "meta-llama/llama-4-scout-17b-16e-instruct" 
-            : "openai/gpt-oss-120b";
-
-        const response = await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: messages,
-                    temperature: 0.7,
-                    max_tokens: 500
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (!data.choices || !data.choices[0]) {
-            const errMsg = data.error?.message || "Groq API Error";
-            return res.status(500).json({ reply: "API Error: " + errMsg });
-        }
-
-        const reply = data.choices[0].message.content;
-
-        // ⭐ LEAD CAPTURE: Agar reply mein phone number detect ho, toh email bhejo
-        const fullText = message + " " + reply;
+        // 📧 LEAD CAPTURE
+        const fullText = (message || "") + " " + reply;
         const phoneMatch = fullText.match(/(\+?\d[\d\s\-]{8,14}\d)/);
         
-        if (phoneMatch && config.formspreeEndpoint && !config.formspreeEndpoint.includes("YOUR_FORM_ID")) {
-            try {
-                await fetch(config.formspreeEndpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        lead_name: "New Lead",
-                        phone: phoneMatch[0],
-                        business: config.businessName,
-                        chat_summary: fullText.substring(0, 300),
-                        timestamp: new Date().toISOString()
-                    })
-                });
-            } catch (e) { console.log("Formspree error:", e.message); }
+        if (phoneMatch) {
+            const budgetMatch = fullText.match(/(\d+\s*(lakh|lac|crore|cr|k))/i);
+            const locationMatch = fullText.match(/(andheri|bandra|juhu|thane|pune|mumbai|delhi|dubai|london|new york)/i);
+            
+            const leadData = {
+                name: "Customer",
+                phone: phoneMatch[0],
+                budget: budgetMatch ? budgetMatch[0] : "N/A",
+                location: locationMatch ? locationMatch[0] : "N/A",
+                summary: fullText.substring(0, 300)
+            };
+
+            // 1️⃣ Formspree (Email)
+            if (config.formspreeEndpoint && !config.formspreeEndpoint.includes("YOUR_FORM_ID")) {
+                try {
+                    await fetch(config.formspreeEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(leadData)
+                    });
+                } catch (e) { console.log("Formspree:", e.message); }
+            }
+
+            // 2️⃣ Google Sheet
+            if (config.googleSheetUrl && !config.googleSheetUrl.includes("XXXXX")) {
+                try {
+                    await fetch(config.googleSheetUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(leadData)
+                    });
+                } catch (e) { console.log("Sheet:", e.message); }
+            }
         }
 
         return res.status(200).json({ reply });
