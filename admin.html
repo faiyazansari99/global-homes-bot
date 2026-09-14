@@ -50,6 +50,7 @@
             <div class="error" id="errorMsg">Wrong password! Try again.</div>
         </div>
     </div>
+
     <div class="dashboard" id="dashboard">
         <div class="dash-header">
             <h1>📊 <span id="brandName">Global Homes</span> - Leads</h1>
@@ -58,14 +59,18 @@
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
+
         <div class="stats-grid">
             <div class="stat-card"><div class="label">Total Leads</div><div class="value" id="totalLeads">0</div></div>
             <div class="stat-card"><div class="label">Today's Leads</div><div class="value" id="todayLeads">0</div></div>
             <div class="stat-card"><div class="label">Last 7 Days</div><div class="value" id="weekLeads">0</div></div>
         </div>
+
         <div class="leads-table">
             <table>
-                <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Budget</th><th>Location</th></tr></thead>
+                <thead>
+                    <tr><th>Date</th><th>Name</th><th>Phone</th><th>Budget</th><th>Location</th></tr>
+                </thead>
                 <tbody id="leadsBody"></tbody>
             </table>
             <div class="empty" id="emptyState">
@@ -74,6 +79,7 @@
             </div>
         </div>
     </div>
+
     <div class="detail-modal" id="detailModal">
         <div class="detail-content">
             <h2>📋 Lead Details</h2>
@@ -81,9 +87,11 @@
             <button onclick="closeDetail()">Close</button>
         </div>
     </div>
+
     <script src="config.js"></script>
     <script>
         let allLeads = [];
+
         document.getElementById('brandName').innerText = CLIENT_CONFIG.businessName;
         document.getElementById('loginBrand').innerText = CLIENT_CONFIG.businessName + " Dashboard";
         document.title = CLIENT_CONFIG.businessName + " - Admin";
@@ -99,7 +107,12 @@
                 document.getElementById('errorMsg').style.display = 'block';
             }
         }
-        function logout() { sessionStorage.removeItem('admin_logged_in'); location.reload(); }
+
+        function logout() {
+            sessionStorage.removeItem('admin_logged_in');
+            location.reload();
+        }
+
         if (sessionStorage.getItem('admin_logged_in') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
@@ -108,12 +121,14 @@
 
         async function loadLeads() {
             if (!CLIENT_CONFIG.googleSheetUrl || CLIENT_CONFIG.googleSheetUrl.includes("XXXXX")) {
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ URL not set</h3>";
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ URL not set</h3><p>Check config.js</p>";
                 return;
             }
+
             document.getElementById('emptyState').innerHTML = "<h3>⏳ Loading...</h3>";
+
             try {
-                // CORS Proxy
+                // ✅ CORS Proxy
                 const proxyUrl = "https://api.allorigins.win/raw?url=";
                 const res = await fetch(proxyUrl + encodeURIComponent(CLIENT_CONFIG.googleSheetUrl));
                 const data = await res.json();
@@ -126,13 +141,15 @@
                 } else {
                     allLeads = data;
                 }
+                
                 renderLeads(allLeads);
                 updateStats(allLeads);
             } catch (e) {
                 console.error("Load error:", e);
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load failed</h3><p>Click Refresh</p>";
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load failed</h3><p>Click Refresh button</p>";
             }
         }
+
         function updateStats(leads) {
             document.getElementById('totalLeads').innerText = leads.length;
             const today = new Date().toDateString();
@@ -140,26 +157,34 @@
             const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
             document.getElementById('weekLeads').innerText = leads.filter(l => new Date(l.Date) >= weekAgo).length;
         }
+
         function renderLeads(leads) {
             const tbody = document.getElementById('leadsBody');
             const emptyState = document.getElementById('emptyState');
+            
             if (leads.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 emptyState.innerHTML = "<h3>📭 No leads yet</h3><p>Leads will appear here.</p>";
                 return;
             }
+            
             emptyState.style.display = 'none';
             tbody.innerHTML = '';
+            
             leads.slice().reverse().forEach((lead, i) => {
                 const date = lead.Date ? new Date(lead.Date).toLocaleDateString() : 'N/A';
                 tbody.innerHTML += `
                     <tr onclick="showDetail(${leads.length - 1 - i})">
-                        <td>${date}</td><td>${lead.Name || 'N/A'}</td><td>${lead.Phone || 'N/A'}</td>
-                        <td>${lead.Budget || 'N/A'}</td><td>${lead.Location || 'N/A'}</td>
+                        <td>${date}</td>
+                        <td>${lead.Name || 'N/A'}</td>
+                        <td>${lead.Phone || 'N/A'}</td>
+                        <td>${lead.Budget || 'N/A'}</td>
+                        <td>${lead.Location || 'N/A'}</td>
                     </tr>`;
             });
         }
+
         function showDetail(index) {
             const lead = allLeads[index];
             document.getElementById('detailBody').innerHTML = `
@@ -171,7 +196,10 @@
                 <p><strong>Summary:</strong><br>${lead.Summary || 'N/A'}</p>`;
             document.getElementById('detailModal').style.display = 'flex';
         }
-        function closeDetail() { document.getElementById('detailModal').style.display = 'none'; }
+
+        function closeDetail() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
     </script>
 </body>
 </html>
