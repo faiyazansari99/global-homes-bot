@@ -10,10 +10,10 @@ const CLIENT_CONFIG = {
     email: "info@globalhomes.ae",
     address: "Business Bay, Dubai, UAE",
     
-    // ✅ NAYA Google Sheet URL (Fresh Deploy)
+    // ✅ Google Sheet URL (Naya - Fresh Deploy)
     googleSheetUrl: "https://script.google.com/macros/s/AKfycbzC7HRXh-oNZN7gAQkBwHq97l0z7mDsZcXYEf8xz0CK6S2tTQ5nuUxqz6A_WRwRw-nhsQ/exec",
     
-    // ✅ Formspree Email URL
+    // ✅ Formspree Email URL (Email Alert Ke Liye)
     formspreeEndpoint: "https://formspree.io/f/xqpkvddr",
     
     // Admin Page Password
