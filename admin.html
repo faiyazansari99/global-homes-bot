@@ -121,12 +121,10 @@
 
         async function loadLeads() {
             if (!CLIENT_CONFIG.googleSheetUrl || CLIENT_CONFIG.googleSheetUrl.includes("XXXXX")) {
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ URL not set</h3><p>Check config.js</p>";
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ URL not set</h3>";
                 return;
             }
-
             document.getElementById('emptyState').innerHTML = "<h3>⏳ Loading...</h3>";
-
             try {
                 // ✅ CORS Proxy
                 const proxyUrl = "https://api.allorigins.win/raw?url=";
@@ -141,12 +139,11 @@
                 } else {
                     allLeads = data;
                 }
-                
                 renderLeads(allLeads);
                 updateStats(allLeads);
             } catch (e) {
                 console.error("Load error:", e);
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load failed</h3><p>Click Refresh button</p>";
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load failed</h3><p>Click Refresh</p>";
             }
         }
 
@@ -161,26 +158,20 @@
         function renderLeads(leads) {
             const tbody = document.getElementById('leadsBody');
             const emptyState = document.getElementById('emptyState');
-            
             if (leads.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 emptyState.innerHTML = "<h3>📭 No leads yet</h3><p>Leads will appear here.</p>";
                 return;
             }
-            
             emptyState.style.display = 'none';
             tbody.innerHTML = '';
-            
             leads.slice().reverse().forEach((lead, i) => {
                 const date = lead.Date ? new Date(lead.Date).toLocaleDateString() : 'N/A';
                 tbody.innerHTML += `
                     <tr onclick="showDetail(${leads.length - 1 - i})">
-                        <td>${date}</td>
-                        <td>${lead.Name || 'N/A'}</td>
-                        <td>${lead.Phone || 'N/A'}</td>
-                        <td>${lead.Budget || 'N/A'}</td>
-                        <td>${lead.Location || 'N/A'}</td>
+                        <td>${date}</td><td>${lead.Name || 'N/A'}</td><td>${lead.Phone || 'N/A'}</td>
+                        <td>${lead.Budget || 'N/A'}</td><td>${lead.Location || 'N/A'}</td>
                     </tr>`;
             });
         }
@@ -197,9 +188,7 @@
             document.getElementById('detailModal').style.display = 'flex';
         }
 
-        function closeDetail() {
-            document.getElementById('detailModal').style.display = 'none';
-        }
+        function closeDetail() { document.getElementById('detailModal').style.display = 'none'; }
     </script>
 </body>
 </html>
