@@ -119,18 +119,45 @@
             loadLeads();
         }
 
+        // ✅ 3 PROXIES WITH FALLBACK SYSTEM
         async function loadLeads() {
             if (!CLIENT_CONFIG.googleSheetUrl || CLIENT_CONFIG.googleSheetUrl.includes("XXXXX")) {
                 document.getElementById('emptyState').innerHTML = "<h3>⚠️ URL not set</h3>";
                 return;
             }
+
             document.getElementById('emptyState').innerHTML = "<h3>⏳ Loading...</h3>";
+
+            const proxies = [
+                "https://corsproxy.io/?url=",
+                "https://api.allorigins.win/raw?url=",
+                "https://api.codetabs.com/v1/proxy?quest="
+            ];
+
+            let data = null;
+            let usedProxy = "";
+
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    const res = await fetch(proxies[i] + encodeURIComponent(CLIENT_CONFIG.googleSheetUrl));
+                    const parsed = await res.json();
+                    if (Array.isArray(parsed)) {
+                        data = parsed;
+                        usedProxy = proxies[i];
+                        console.log("✅ Success with proxy:", proxies[i]);
+                        break;
+                    }
+                } catch (e) {
+                    console.log("❌ Proxy failed:", proxies[i], e.message);
+                }
+            }
+
+            if (!data) {
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ All proxies failed</h3><p>Click Refresh again</p>";
+                return;
+            }
+
             try {
-                // ✅ CORS Proxy (Updated to corsproxy.io)
-                const proxyUrl = "https://corsproxy.io/?url=";
-                const res = await fetch(proxyUrl + encodeURIComponent(CLIENT_CONFIG.googleSheetUrl));
-                const data = await res.json();
-                
                 if (data.length > 0 && Array.isArray(data[0])) {
                     allLeads = data.slice(1).map(row => ({
                         Date: row[0], Name: row[1], Phone: row[2], 
@@ -142,8 +169,8 @@
                 renderLeads(allLeads);
                 updateStats(allLeads);
             } catch (e) {
-                console.error("Load error:", e);
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load failed</h3><p>Click Refresh button</p>";
+                console.error("Parse error:", e);
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data parse failed</h3>";
             }
         }
 
