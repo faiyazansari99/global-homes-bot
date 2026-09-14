@@ -32,6 +32,8 @@
         .leads-table tr:hover { background: #f7fafc; cursor: pointer; }
         .empty { text-align: center; padding: 60px 20px; color: #718096; }
         .empty h3 { font-size: 18px; margin-bottom: 8px; }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #0077b6; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .detail-content { background: white; border-radius: 16px; max-width: 500px; width: 100%; padding: 25px; max-height: 80vh; overflow-y: auto; }
         .detail-content h2 { color: #0a2540; margin-bottom: 15px; }
@@ -119,52 +121,57 @@
             loadLeads();
         }
 
-        // ✅ 3 PROXIES WITH FALLBACK SYSTEM
+        // ✅ FAST LOADING WITH TIMEOUT
         async function loadLeads() {
             if (!CLIENT_CONFIG.googleSheetUrl || CLIENT_CONFIG.googleSheetUrl.includes("XXXXX")) {
                 document.getElementById('emptyState').innerHTML = "<h3>⚠️ URL not set</h3>";
                 return;
             }
 
-            document.getElementById('emptyState').innerHTML = "<h3>⏳ Loading...</h3>";
+            // Show loading spinner
+            document.getElementById('emptyState').innerHTML = '<h3><span class="loading-spinner"></span> Loading leads...</h3>';
 
-            const proxies = [
-                "https://corsproxy.io/?url=",
-                "https://api.allorigins.win/raw?url=",
-                "https://api.codetabs.com/v1/proxy?quest="
-            ];
+            // ✅ Direct Apps Script fetch (NO PROXY - 100% Fast)
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-            let data = null;
-            let usedProxy = "";
+                const res = await fetch(CLIENT_CONFIG.googleSheetUrl, {
+                    method: 'GET',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
 
-            for (let i = 0; i < proxies.length; i++) {
+                const data = await res.json();
+                processData(data);
+            } catch (e) {
+                console.log("Direct fetch failed, trying proxy...", e.message);
+                
+                // Fallback: Try proxy
                 try {
-                    const res = await fetch(proxies[i] + encodeURIComponent(CLIENT_CONFIG.googleSheetUrl));
-                    const parsed = await res.json();
-                    if (Array.isArray(parsed)) {
-                        data = parsed;
-                        usedProxy = proxies[i];
-                        console.log("✅ Success with proxy:", proxies[i]);
-                        break;
-                    }
-                } catch (e) {
-                    console.log("❌ Proxy failed:", proxies[i], e.message);
+                    const proxyUrl = "https://corsproxy.io/?url=";
+                    const res = await fetch(proxyUrl + encodeURIComponent(CLIENT_CONFIG.googleSheetUrl));
+                    const data = await res.json();
+                    processData(data);
+                } catch (err) {
+                    document.getElementById('emptyState').innerHTML = "<h3>⚠️ Connection failed</h3><p>Please refresh page</p>";
                 }
             }
+        }
 
-            if (!data) {
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ All proxies failed</h3><p>Click Refresh again</p>";
-                return;
-            }
-
+        function processData(data) {
             try {
-                if (data.length > 0 && Array.isArray(data[0])) {
+                if (data && data.length > 0 && Array.isArray(data[0])) {
+                    // Raw Array format
                     allLeads = data.slice(1).map(row => ({
                         Date: row[0], Name: row[1], Phone: row[2], 
                         Budget: row[3], Location: row[4], Summary: row[5]
                     }));
-                } else {
+                } else if (Array.isArray(data)) {
+                    // Object format
                     allLeads = data;
+                } else {
+                    allLeads = [];
                 }
                 renderLeads(allLeads);
                 updateStats(allLeads);
