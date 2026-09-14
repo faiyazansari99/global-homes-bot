@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #f0f4f8; color: #1a1a2e; min-height: 100vh; }
@@ -22,6 +22,7 @@
         .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         .dash-header h1 { font-size: 26px; color: #0a2540; }
         .logout-btn { background: #e53e3e; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .refresh-btn { background: #0077b6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 10px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
@@ -53,14 +54,17 @@
             <p id="loginBrand">Global Homes Dashboard</p>
             <input type="password" id="password" placeholder="Enter password" onkeypress="if(event.key==='Enter')login()">
             <button onclick="login()">Login</button>
-            <div class="error" id="errorMsg">Galat password! Dobara try karein.</div>
+            <div class="error" id="errorMsg">Wrong password! Try again.</div>
         </div>
     </div>
 
     <div class="dashboard" id="dashboard">
         <div class="dash-header">
             <h1>📊 <span id="brandName">Global Homes</span> - Leads</h1>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>
+                <button class="refresh-btn" onclick="loadLeads()">🔄 Refresh</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
         </div>
 
         <div class="stats-grid">
@@ -79,8 +83,8 @@
                 <tbody id="leadsBody"></tbody>
             </table>
             <div class="empty" id="emptyState">
-                <h3>📭 Abhi tak koi lead nahi aayi</h3>
-                <p>Jab customer bot se baat karega, leads yahan dikhengi.</p>
+                <h3>📭 No leads yet</h3>
+                <p>When a customer chats with the bot, leads will appear here.</p>
             </div>
         </div>
     </div>
@@ -125,26 +129,34 @@
         }
 
         async function loadLeads() {
+            if (!CLIENT_CONFIG.googleSheetUrl || CLIENT_CONFIG.googleSheetUrl.includes("XXXXX")) {
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Google Sheet URL not set</h3><p>Update config.js</p>";
+                return;
+            }
+
+            document.getElementById('emptyState').innerHTML = "<h3>⏳ Loading...</h3>";
+
             try {
-                const res = await fetch(CLIENT_CONFIG.googleSheetUrl);
+                // ✅ CORS Proxy to bypass browser security
+                const proxyUrl = "https://api.allorigins.win/raw?url=";
+                const res = await fetch(proxyUrl + encodeURIComponent(CLIENT_CONFIG.googleSheetUrl));
                 const data = await res.json();
                 
-                // Handle both raw array and object array formats
+                // Handle both formats: raw array or object array
                 if (data.length > 0 && Array.isArray(data[0])) {
-                    // Raw format: [["Date","Name",...], [...], [...]]
                     allLeads = data.slice(1).map(row => ({
                         Date: row[0], Name: row[1], Phone: row[2], 
                         Budget: row[3], Location: row[4], Summary: row[5]
                     }));
                 } else {
-                    // Object format
                     allLeads = data;
                 }
                 
                 renderLeads(allLeads);
                 updateStats(allLeads);
             } catch (e) {
-                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load nahi hua</h3><p>Internet ya URL check karein.</p>";
+                console.error("Load error:", e);
+                document.getElementById('emptyState').innerHTML = "<h3>⚠️ Data load failed</h3><p>Please refresh the page.</p>";
             }
         }
 
@@ -163,6 +175,7 @@
             if (leads.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
+                emptyState.innerHTML = "<h3>📭 No leads yet</h3><p>When a customer chats with the bot, leads will appear here.</p>";
                 return;
             }
             
