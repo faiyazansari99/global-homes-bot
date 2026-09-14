@@ -8,7 +8,6 @@ export default async function handler(req, res) {
     if (!config) return res.status(500).json({ reply: "Config missing!" });
 
     try {
-        // Build system prompt from config
         let finalPrompt = config.systemPrompt
             .replace(/{businessName}/g, config.businessName || "")
             .replace(/{businessType}/g, config.businessType || "")
@@ -23,7 +22,6 @@ export default async function handler(req, res) {
         }
         messages.push({ role: "user", content: message });
 
-        // Call Groq AI
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: 'POST',
             headers: {
@@ -44,9 +42,7 @@ export default async function handler(req, res) {
         }
         const reply = groqData.choices[0].message.content;
 
-        // ============================================
         // 📧 LEAD CAPTURE
-        // ============================================
         const fullText = (message || "") + " " + reply;
         const phoneMatch = fullText.match(/(\+?\d[\d\s\-]{8,14}\d)/);
         
@@ -73,24 +69,18 @@ export default async function handler(req, res) {
                         },
                         body: JSON.stringify(leadData)
                     });
-                } catch (e) {
-                    console.log("Formspree Error:", e.message);
-                }
+                } catch (e) { console.log("Formspree Error:", e.message); }
             }
 
-            // 2️⃣ Google Sheet (Apps Script)
+            // 2️⃣ Google Sheet
             if (config.googleSheetUrl && !config.googleSheetUrl.includes("XXXXX")) {
                 try {
                     await fetch(config.googleSheetUrl, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(leadData)
                     });
-                } catch (e) {
-                    console.log("Google Sheet Error:", e.message);
-                }
+                } catch (e) { console.log("Google Sheet Error:", e.message); }
             }
         }
 
