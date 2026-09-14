@@ -8,6 +8,7 @@ export default async function handler(req, res) {
     if (!config) return res.status(500).json({ reply: "Config missing!" });
 
     try {
+        // Build system prompt from config
         let finalPrompt = config.systemPrompt
             .replace(/{businessName}/g, config.businessName || "")
             .replace(/{businessType}/g, config.businessType || "")
@@ -22,18 +23,30 @@ export default async function handler(req, res) {
         }
         messages.push({ role: "user", content: message });
 
+        // Call Groq AI
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
-            body: JSON.stringify({ model: "openai/gpt-oss-120b", messages, temperature: 0.7, max_tokens: 500 })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${groqKey}`
+            },
+            body: JSON.stringify({
+                model: "openai/gpt-oss-120b",
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 500
+            })
         });
+
         const groqData = await groqRes.json();
         if (!groqData.choices || !groqData.choices[0]) {
             return res.status(500).json({ reply: "API Error: " + (groqData.error?.message || "Unknown") });
         }
         const reply = groqData.choices[0].message.content;
 
+        // ============================================
         // 📧 LEAD CAPTURE
+        // ============================================
         const fullText = (message || "") + " " + reply;
         const phoneMatch = fullText.match(/(\+?\d[\d\s\-]{8,14}\d)/);
         
@@ -54,21 +67,30 @@ export default async function handler(req, res) {
                 try {
                     await fetch(config.formspreeEndpoint, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
                         body: JSON.stringify(leadData)
                     });
-                } catch (e) { console.log("Formspree:", e.message); }
+                } catch (e) {
+                    console.log("Formspree Error:", e.message);
+                }
             }
 
-            // 2️⃣ Google Sheet (CORS Fixed)
+            // 2️⃣ Google Sheet (Apps Script)
             if (config.googleSheetUrl && !config.googleSheetUrl.includes("XXXXX")) {
                 try {
                     await fetch(config.googleSheetUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify(leadData)
                     });
-                } catch (e) { console.log("Sheet:", e.message); }
+                } catch (e) {
+                    console.log("Google Sheet Error:", e.message);
+                }
             }
         }
 
