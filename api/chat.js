@@ -60,7 +60,7 @@ export default async function handler(req, res) {
                 } catch (e) { console.log("Formspree:", e.message); }
             }
 
-            // 2️⃣ Google Sheet
+            // 2️⃣ Google Sheet (CORS Fixed)
             if (config.googleSheetUrl && !config.googleSheetUrl.includes("XXXXX")) {
                 try {
                     await fetch(config.googleSheetUrl, {
