@@ -9,7 +9,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #f8f9fa; color: #1a1a2e; overflow-x: hidden; }
         
-        /* NAVBAR */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 4%; background: #fff; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 20px rgba(0,0,0,0.06); gap: 10px; }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; color: #0a2540; }
         .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, #00b4d8, #0077b6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 19px; box-shadow: 0 4px 12px rgba(0,119,182,0.3); flex-shrink: 0; }
@@ -17,7 +16,6 @@
         .nav-links a { color: #4a5568; text-decoration: none; transition: color 0.3s; }
         .nav-links a:hover { color: #0077b6; }
         
-        /* WHATSAPP BUTTON (Navbar) */
         .btn-whatsapp {
             background: linear-gradient(135deg, #25D366, #128C7E);
             color: white;
@@ -38,7 +36,6 @@
         .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 211, 102, 0.5); }
         .btn-whatsapp span { display: inline; }
         
-        /* HERO */
         .hero { position: relative; height: 400px; background: url('https://images.unsplash.com/photo-1512453979798-5ea904ac66de?auto=format&fit=crop&w=1600&q=80') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,37,64,0.8), rgba(0,119,182,0.65)); }
         .hero-content { position: relative; z-index: 1; max-width: 700px; }
@@ -48,13 +45,11 @@
         .search-bar input { border: none; outline: none; padding: 12px 16px; flex: 1; border-radius: 10px; font-size: 14px; background: transparent; min-width: 0; }
         .search-bar button { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; border: none; padding: 12px 22px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; white-space: nowrap; }
         
-        /* STATS */
         .stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; padding: 30px 5%; background: white; box-shadow: 0 5px 25px rgba(0,0,0,0.05); }
         .stat-item { text-align: center; }
         .stat-item .num { font-size: 24px; font-weight: 800; color: #0077b6; letter-spacing: -0.5px; }
         .stat-item .label { font-size: 11px; color: #718096; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* PROPERTIES */
         .section-header { display: flex; justify-content: space-between; align-items: center; padding: 35px 5% 18px; }
         .section-header h2 { font-size: 24px; font-weight: 800; color: #0a2540; letter-spacing: -0.5px; }
         .section-header a { color: #0077b6; text-decoration: none; font-size: 14px; font-weight: 600; }
@@ -76,7 +71,6 @@
         .view-btn { width: 100%; padding: 12px; background: #f0f7fa; color: #0077b6; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s; }
         .view-btn:hover { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; }
         
-        /* CHAT WIDGET (Right Bottom) */
         .chat-widget { position: fixed; bottom: 22px; right: 22px; z-index: 1002; }
         .chat-btn { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 26px; box-shadow: 0 10px 30px rgba(0,119,182,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
         .chat-btn:hover { transform: scale(1.1); }
@@ -101,7 +95,6 @@
         .chat-input input[type="text"] { flex: 1; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 25px; outline: none; font-size: 13px; min-width: 0; }
         .icon-btn { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         
-        /* FOOTER */
         .footer { background: #0a2540; color: white; padding: 40px 5% 20px; text-align: center; margin-top: 20px; }
         .footer-content { max-width: 600px; margin: 0 auto; }
         .footer h3 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
@@ -110,7 +103,6 @@
         .footer .contact-info span { color: rgba(255,255,255,0.9); }
         .footer .copyright { font-size: 12px; color: rgba(255,255,255,0.5); padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
         
-        /* RESPONSIVE */
         @media (min-width: 768px) {
             .nav-links { display: flex; }
             .hero { height: 520px; }
@@ -125,7 +117,6 @@
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
             <div class="logo-icon">🏢</div>
@@ -145,7 +136,6 @@
         </button>
     </div>
 
-    <!-- HERO -->
     <div class="hero" id="home">
         <div class="hero-content">
             <h1>Find Your Global Home</h1>
@@ -157,14 +147,12 @@
         </div>
     </div>
 
-    <!-- STATS -->
     <div class="stats">
         <div class="stat-item"><div class="num">10,000+</div><div class="label">Verified Listings</div></div>
         <div class="stat-item"><div class="num">50+</div><div class="label">Cities Worldwide</div></div>
         <div class="stat-item"><div class="num">25K+</div><div class="label">Happy Clients</div></div>
     </div>
 
-    <!-- PROPERTIES -->
     <div class="section-header" id="properties">
         <h2>Featured Properties</h2>
         <a href="#">View All →</a>
@@ -217,7 +205,6 @@
         </div>
     </div>
 
-    <!-- ABOUT SECTION -->
     <div class="section-header" id="about">
         <h2>About Global Homes</h2>
     </div>
@@ -227,7 +214,6 @@
         </p>
     </div>
 
-    <!-- FOOTER -->
     <div class="footer" id="contact">
         <div class="footer-content">
             <h3 id="footerBrand">Global Homes</h3>
@@ -241,7 +227,6 @@
         </div>
     </div>
 
-    <!-- CHAT WIDGET -->
     <div class="chat-widget">
         <button class="chat-btn" onclick="toggleChat()">💬</button>
         <div class="chat-window" id="chatWindow">
@@ -293,7 +278,8 @@
             chatBox.innerHTML = '';
             chatHistory.forEach(msg => {
                 const cls = msg.role === 'user' ? 'user-msg' : 'bot-msg';
-                chatBox.innerHTML += `<div class="msg ${cls}">${msg.content}</div>`;
+                const cleanContent = msg.content.replace(/\*/g, '').replace(/#/g, '').replace(/_/g, '').replace(/`/g, '');
+                chatBox.innerHTML += `<div class="msg ${cls}">${cleanContent}</div>`;
             });
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -349,9 +335,11 @@
                 });
                 const data = await response.json();
                 document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="msg bot-msg">${data.reply}</div>`;
                 
-                chatHistory.push({ role: "assistant", content: data.reply });
+                const cleanReply = data.reply.replace(/\*/g, '').replace(/#/g, '').replace(/_/g, '').replace(/`/g, '');
+                chatBox.innerHTML += `<div class="msg bot-msg">${cleanReply}</div>`;
+                
+                chatHistory.push({ role: "assistant", content: cleanReply });
                 if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
                 localStorage.setItem('gh_chat_history', JSON.stringify(chatHistory));
                 
