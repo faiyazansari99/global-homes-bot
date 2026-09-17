@@ -14,11 +14,11 @@ const CLIENT_CONFIG = {
     email: "info@globalhomes.com",
     address: "Business Bay, Dubai, UAE",
     
-    // Google Sheet Integration
-    googleSheetUrl: "YOUR_APPS_SCRIPT_WEB_APP_URL",
+    // ✅ Google Sheet URL (Actual URL)
+    googleSheetUrl: "https://script.google.com/macros/s/AKfycbzC7HRXh-oNZN7gAQkBwHq97l0z7mDsZcXYEf8xz0CK6S2tTQ5nuUxqz6A_WRwRw-nhsQ/exec",
     
-    // Formspree Email Integration
-    formspreeEndpoint: "YOUR_FORMSPREE_ENDPOINT",
+    // ✅ Formspree Email URL (Actual URL)
+    formspreeEndpoint: "https://formspree.io/f/xqpkvddr",
     
     // Admin Dashboard Password
     adminPassword: "admin123",
