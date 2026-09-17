@@ -16,6 +16,9 @@ export default async function handler(req, res) {
             .replace(/{email}/g, config.email || "")
             .replace(/{address}/g, config.address || "");
 
+        // Add instruction to avoid markdown formatting
+        finalPrompt += "\n\nIMPORTANT: Do NOT use asterisks (*), hashtags (#), or any markdown formatting in your replies. Write plain, simple text only.";
+
         const messages = [{ role: "system", content: finalPrompt }];
         if (history && history.length) {
             history.forEach(m => messages.push({ role: m.role, content: m.content }));
@@ -40,7 +43,10 @@ export default async function handler(req, res) {
         if (!groqData.choices || !groqData.choices[0]) {
             return res.status(500).json({ reply: "API Error: " + (groqData.error?.message || "Unknown") });
         }
-        const reply = groqData.choices[0].message.content;
+        let reply = groqData.choices[0].message.content;
+
+        // Remove asterisks and markdown formatting
+        reply = reply.replace(/\*/g, '').replace(/#/g, '').replace(/_/g, '').replace(/`/g, '');
 
         // 📧 LEAD CAPTURE
         const fullText = (message || "") + " " + reply;
