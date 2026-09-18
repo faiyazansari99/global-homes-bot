@@ -87,6 +87,16 @@
         .user-msg { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; margin-left: auto; border-bottom-right-radius: 5px; }
         .bot-msg { background: white; color: #2d3748; border-bottom-left-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         
+        .typing-dots { display: inline-flex; gap: 4px; align-items: center; }
+        .typing-dots span { width: 6px; height: 6px; background: #0077b6; border-radius: 50%; animation: typingBounce 1.4s infinite; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+        
         .quick-replies { padding: 8px 10px; background: white; display: flex; gap: 6px; flex-wrap: wrap; border-top: 1px solid #e2e8f0; }
         .qr-btn { background: #f0f7fa; color: #0077b6; border: 1px solid #cce7f0; padding: 5px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; font-weight: 500; }
         .qr-btn:hover { background: #0077b6; color: white; }
@@ -320,32 +330,53 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const typingId = 'typing-' + Date.now();
-            chatBox.innerHTML += `<div class="msg bot-msg" id="${typingId}">Typing...</div>`;
+            chatBox.innerHTML += `<div class="msg bot-msg" id="${typingId}"><span class="typing-dots"><span></span><span></span><span></span></span></div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: message,
-                        config: CLIENT_CONFIG,
-                        history: chatHistory.slice(-20)
-                    })
-                });
-                const data = await response.json();
-                document.getElementById(typingId).remove();
-                
-                const cleanReply = data.reply.replace(/\*/g, '').replace(/#/g, '').replace(/_/g, '').replace(/`/g, '');
-                chatBox.innerHTML += `<div class="msg bot-msg">${cleanReply}</div>`;
-                
-                chatHistory.push({ role: "assistant", content: cleanReply });
-                if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
-                localStorage.setItem('gh_chat_history', JSON.stringify(chatHistory));
-                
-            } catch (error) {
-                document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="msg bot-msg">Error! Network issue. Please try again.</div>`;
+            let retries = 0;
+            let success = false;
+
+            while (retries < 3 && !success) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+                    
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: message,
+                            config: CLIENT_CONFIG,
+                            history: chatHistory.slice(-20)
+                        }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    
+                    const data = await response.json();
+                    
+                    if (data.reply && data.reply.length > 0) {
+                        document.getElementById(typingId).remove();
+                        const cleanReply = data.reply.replace(/\*/g, '').replace(/#/g, '').replace(/_/g, '').replace(/`/g, '');
+                        chatBox.innerHTML += `<div class="msg bot-msg">${cleanReply}</div>`;
+                        chatHistory.push({ role: "assistant", content: cleanReply });
+                        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+                        localStorage.setItem('gh_chat_history', JSON.stringify(chatHistory));
+                        success = true;
+                    } else {
+                        throw new Error("Empty reply");
+                    }
+                } catch (error) {
+                    retries++;
+                    if (retries < 3) {
+                        const typingEl = document.getElementById(typingId);
+                        if (typingEl) typingEl.innerHTML = `Retrying (${retries}/3)...`;
+                        await new Promise(r => setTimeout(r, 1000));
+                    } else {
+                        document.getElementById(typingId).remove();
+                        chatBox.innerHTML += `<div class="msg bot-msg">Network issue. Please check your internet and try again.</div>`;
+                    }
+                }
             }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
